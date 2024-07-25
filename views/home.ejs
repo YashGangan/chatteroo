@@ -1,0 +1,52 @@
+<%- include('partials/header') %>
+<!-- layout -->
+<!-- Hero -->
+<div class="relative overflow-hidden">
+  <div class="flex justify-end m-5">
+    <a href="/logout" class=" py-2 px-4 items-center gap-x-2 text-sm font-medium rounded-lg border-2 border-red-800  text-red-800 hover:text-white hover:bg-red-600 focus:outline-none focus:bg-red-600 disabled:opacity-50 disabled:pointer-events-none">
+      Logout
+    </a>
+  </div>
+    <div class="max-w-[85rem] mx-auto px-4 sm:px-6 lg:px-8 py-30 md:py-10">
+      <div class="text-center">
+        <h1 class="text-4xl sm:text-6xl font-bold text-gray-800">
+          Welcome to Chatteroo
+        </h1>
+  
+        <p class="mt-3 text-gray-600">
+          Chat with people from around the world
+        </p>
+  
+        <div class="mt-7 sm:mt-12 mx-auto max-w-xl relative">
+          <!-- Form -->
+          <form action="/submit" method="post">
+            <div class="w-full space-y-3">
+                <div>
+                  <label for="username" class="flex flex-start text-sm font-medium mb-2">Username:</label>
+                  <div class="relative">
+                    <input type="text" value=<%= username %> id="username" name="username" class="py-3 px-4 pe-11 block w-full border-2 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none" placeholder="What should we call you?">
+                  </div>
+                </div>
+            </div>
+            <div class="my-4">
+            <label for="room" class="flex flex-start text-sm font-medium mb-2">Room:</label>
+            <select name="room" class="py-3 px-3 block w-full border-2 rounded-lg text-sm cursor-pointer focus:border-blue-500 focus:ring-blue-500">
+                <option selected="">Click to select a room</option>
+                <option>1</option>
+                <option>2</option>
+                <option>3</option>
+            </select>
+            </div>
+            <!-- Submit button -->
+            <button type="submit" class="w-full py-3 px-4 inline-flex justify-center items-center gap-x-2 text-sm font-medium rounded-lg border border-transparent bg-blue-600 text-white hover:bg-blue-700 focus:outline-none focus:bg-blue-700 disabled:opacity-50 disabled:pointer-events-none">
+                Enter the room
+              </button>
+          </form>
+          <!-- End Form -->
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- End Hero -->
+
+<%- include('partials/footer') %>
