@@ -7,16 +7,66 @@ import { Strategy } from "passport-local";
 import GoogleStrategy from "passport-google-oauth2";
 import session from "express-session";
 import env from "dotenv";
-import { generateFromEmail, generateUsername } from "unique-username-generator";
+import { generateFromEmail } from "unique-username-generator";
+import * as http from 'node:http';
+import { Server } from "socket.io";
+import formatMessage from './utils/messages.js';
+import {userJoin, getCurrentUser, userLeave, getRoomUsers} from './utils/users.js';
+
+import cookieParser from "cookie-parser";
 
 const app = express();
 const port = process.env.PORT || 3000;
+const botName = "ChatterooBot"
+
+// Socket connections
+const server = http.createServer(app);
+const io = new Server(server);
+
+// Starts when client connects
+io.on('connection', socket => {
+  // Join Room
+  socket.on('joinRoom', ({username, room}) => {
+    const user = userJoin(socket.id, username, room);
+    socket.join(user.room);
+
+    socket.emit('message', formatMessage(botName, 'Welcome to Chatteroo'));
+
+    // Broadcast when a user connects
+    socket.broadcast.to(user.room).emit('message', formatMessage(botName, `${username} has joined the chat`));
+    
+    // Send room and user info
+    io.to(user.room).emit("roomUsers", {
+      room: user.room,
+      users: getRoomUsers(user.room)
+    });
+  })
+  
+  // Listen for chat message
+  socket.on('chatMessage', (msg) => {
+    const user = getCurrentUser(socket.id)
+    io.to(user.room).emit('message', formatMessage(user.username, msg));
+  });
+
+    // When client disconnects
+    socket.on('disconnect', () => {
+      const user = userLeave(socket.id);
+      if (user) {
+        io.to(user.room).emit('message', formatMessage(botName, `${user.username} has left the chat`));
+        io.to(user.room).emit("roomUsers", {
+          room: user.room,
+          users: getRoomUsers(user.room),
+        });
+      }
+    })
+});
+
 const saltRounds = 10;
 env.config();
 
 app.use(express.static('public'));
 app.use(bodyParser.urlencoded({extended: true}))
-app.set('view engine', 'ejs'); 
+app.set('view engine', 'ejs');
 
 app.use(
     session({
@@ -27,7 +77,7 @@ app.use(
         maxAge: 1000 * 60 * 60 * 24,
       }
     })
-  );
+);
 
 app.use(passport.initialize());
 app.use(passport.session());
@@ -40,7 +90,6 @@ const db = new pg.Client({
     port: process.env.PG_PORT,
 });
 db.connect();
-
 
 app.get("/", (req, res) => {
     res.render('index.ejs');
@@ -62,7 +111,6 @@ app.get("/logout", (req, res) => {
     res.redirect("/");
   });
 });
-
 
 app.get("/home", async (req, res) => {
   if (req.isAuthenticated()) {
@@ -86,18 +134,48 @@ app.get("/home", async (req, res) => {
       console.log(err);
     }
   } else {
-    res.redirect("/login");
+    res.redirect("/logout");
   }
 })
 
+// Make the chat route such that it gets the username & room
+// app.get("/chat", async (req, res) => {
+//   if (req.isAuthenticated()) {
+//     console.log(req);
+//     const result = await db.query("SELECT username FROM users WHERE email = $1", [req.user.email]);
+//     const currUser = result.rows[0].username;
+//     const room = 1;
+//     // console.log(currUser);
+//     if(req.body.username !== currUser) {
+//       try {
+//         const result = await db.query("UPDATE users SET username = $1 WHERE email = $2 RETURNING *", [req.body.username, req.user.email]);
+//         const currUser = await result.rows[0].username;
+//         res.render("chat.ejs", {username: currUser, room: room});
+//       } catch(err) {
+//         console.log(err);
+//       }
+//     } else {
+//       res.render("chat.ejs", {username: currUser, room: room});
+//     }
+//   } else {
+//     res.redirect("/logout");
+//   }
+// })
+
 app.get("/chat", async (req, res) => {
   if (req.isAuthenticated()) {
-    const result = await db.query("SELECT username FROM users WHERE email = $1", [req.user.email]);
-    const currUser = result.rows[0].username;
-    // console.log(currUser);
-    res.render("chat.ejs", {username: currUser});
+      // const result = await db.query("SELECT username FROM users WHERE email = $1", [req.user.email]);
+      const currUser = req.body.username;
+      const room = req.body.room;
+      console.log(req.body);
+      try {
+        const result = await db.query("UPDATE users SET username = $1 WHERE email = $2 RETURNING *", [req.body.username, req.user.email]);
+        res.render("chat.ejs", {username: currUser, room: room});
+      } catch(err) {
+        console.log(err);
+      }
   } else {
-    res.redirect("/login");
+    res.redirect("/logout");
   }
 })
 
@@ -120,7 +198,7 @@ app.post("/login",
     passport.authenticate("local", {
       successRedirect: "/home",
       failureRedirect: "/register",
-    })
+    }),
 );
 
 app.post("/register", async (req, res) => {
@@ -157,14 +235,20 @@ app.post("/register", async (req, res) => {
 })
 
 // Submit the username and chosen room
-app.post("/submit", async (req, res) => {
-  try {
-    await db.query("UPDATE users SET username = $1 WHERE email = $2", [req.body.username, req.user.email]);
-    res.redirect("/chat");
-  } catch(err) {
-    console.log(err);
-  }
-})
+// app.post("/submit", async (req, res) => {
+//   if (req.isAuthenticated()) {
+//     const room = req.body.room;
+//     console.log(room);
+//     try {
+//       await db.query("UPDATE users SET username = $1 WHERE email = $2", [req.body.username, req.user.email]);
+//       res.redirect("/chat");
+//     } catch(err) {
+//       console.log(err);
+//     }
+//   } else {
+//     res.redirect("/")
+//   }
+// })
 
 // google auth strategy (oauth)
 passport.use("google",
@@ -235,4 +319,4 @@ passport.deserializeUser((user, cb) => {
    cb(null, user);
 });
   
-app.listen(port, () => console.log(`Server running on http://localhost:${port}`));
+server.listen(port, () => console.log(`Server running on http://localhost:${port}`));

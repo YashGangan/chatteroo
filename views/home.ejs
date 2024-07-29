@@ -19,7 +19,7 @@
   
         <div class="mt-7 sm:mt-12 mx-auto max-w-xl relative">
           <!-- Form -->
-          <form action="/submit" method="post">
+          <form action="/chat">
             <div class="w-full space-y-3">
                 <div>
                   <label for="username" class="flex flex-start text-sm font-medium mb-2">Username:</label>
@@ -30,11 +30,13 @@
             </div>
             <div class="my-4">
             <label for="room" class="flex flex-start text-sm font-medium mb-2">Room:</label>
-            <select name="room" class="py-3 px-3 block w-full border-2 rounded-lg text-sm cursor-pointer focus:border-blue-500 focus:ring-blue-500">
-                <option selected="">Click to select a room</option>
-                <option>1</option>
-                <option>2</option>
-                <option>3</option>
+            <select name="room" id="room" class="py-3 px-3 block w-full border-2 rounded-lg text-sm cursor-pointer focus:border-blue-500 focus:ring-blue-500">
+                <option value="Global" selected="">Click to select a room</option>
+                <option value="Programming">Programming</option>
+                <option value="Food">Food</option>
+                <option value="Adventure">Adventure</option>
+                <option value="History">History</option>
+                <option value="Life">Life</option>
             </select>
             </div>
             <!-- Submit button -->
