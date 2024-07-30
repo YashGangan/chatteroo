@@ -320,15 +320,15 @@ passport.deserializeUser(async (id, cb) => {
     }
   });
 
-server.listen(port, () => console.log(`Server running on http://localhost:${port}`));
+// server.listen(port, () => console.log(`Server running on http://localhost:${port}`));
 
-// const handleRequest = (req, res) => {
-//   if (!res.socket.server) {
-//     console.log('Server is initializing');
-//     res.socket.server = server;
-//     server.listen();
-//   }
-//   server.emit('request', req, res);
-// };
+const handleRequest = (req, res) => {
+  if (!res.socket.server) {
+    console.log('Server is initializing');
+    res.socket.server = server;
+    server.listen();
+  }
+  server.emit('request', req, res);
+};
 
-export default server;
+export default handleRequest;
