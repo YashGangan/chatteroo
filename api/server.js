@@ -219,13 +219,21 @@ app.post("/register", async (req, res) => {
   }
 });
 
+app.post("/home", async (req, res) => {
+  if (req.isAuthenticated()) {
+    res.redirect("/home");
+  } else {
+    res.redirect("/logout");
+  }
+});
+
 // Google auth strategy (OAuth)
 passport.use("google",
   new GoogleStrategy(
     {
       clientID: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-      callbackURL: "http://localhost:3000/auth/google/chatteroo",
+      callbackURL: "http://chatteroo-yash.vercel.app/auth/google/chatteroo",
       userProfileURL: "https://www.googleapis.com/oauth2/v3/userinfo",
     },
     async (accessToken, refreshToken, profile, cb) => {
@@ -312,15 +320,15 @@ passport.deserializeUser(async (id, cb) => {
     }
   });
 
-// server.listen(port, () => console.log(`Server running on http://localhost:${port}`));
+server.listen(port, () => console.log(`Server running on http://localhost:${port}`));
 
-const handleRequest = (req, res) => {
-  if (!res.socket.server) {
-    console.log('Server is initializing');
-    res.socket.server = server;
-    server.listen();
-  }
-  server.emit('request', req, res);
-};
+// const handleRequest = (req, res) => {
+//   if (!res.socket.server) {
+//     console.log('Server is initializing');
+//     res.socket.server = server;
+//     server.listen();
+//   }
+//   server.emit('request', req, res);
+// };
 
-export default handleRequest;
+export default server;
