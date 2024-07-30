@@ -219,7 +219,7 @@ app.post("/register", async (req, res) => {
   }
 });
 
-app.get("/home", async (req, res) => {
+app.post("/home", async (req, res) => {
   if (req.isAuthenticated()) {
     try {
       const { data, error } = await supabase
