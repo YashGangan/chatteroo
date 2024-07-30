@@ -219,9 +219,21 @@ app.post("/register", async (req, res) => {
   }
 });
 
-app.post("/home", async (req, res) => {
+app.get("/home", async (req, res) => {
   if (req.isAuthenticated()) {
-    res.redirect("/home");
+    try {
+      const { data, error } = await supabase
+        .from('users')
+        .select('username')
+        .eq('email', req.user.email);
+
+      if (error) throw error;
+
+      let newName = data[0]?.username || generateFromEmail(req.user.email, 3);
+      res.render("home.ejs", { username: newName });
+    } catch (err) {
+      console.log(err);
+    }
   } else {
     res.redirect("/logout");
   }
@@ -320,7 +332,7 @@ passport.deserializeUser(async (id, cb) => {
     }
   });
 
-// server.listen(port, () => console.log(`Server running on http://localhost:${port}`));
+server.listen(port, () => console.log(`Server running on http://localhost:${port}`));
 
 const handleRequest = (req, res) => {
   if (!res.socket.server) {
