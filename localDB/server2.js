@@ -10,8 +10,8 @@ import env from "dotenv";
 import { generateFromEmail } from "unique-username-generator";
 import * as http from 'node:http';
 import { Server } from "socket.io";
-import formatMessage from './utils/messages.js';
-import {userJoin, getCurrentUser, userLeave, getRoomUsers} from './utils/users.js';
+import formatMessage from '../utils/messages.js';
+import {userJoin, getCurrentUser, userLeave, getRoomUsers} from '../utils/users.js';
 
 import cookieParser from "cookie-parser";
 
@@ -137,30 +137,6 @@ app.get("/home", async (req, res) => {
     res.redirect("/logout");
   }
 })
-
-// Make the chat route such that it gets the username & room
-// app.get("/chat", async (req, res) => {
-//   if (req.isAuthenticated()) {
-//     console.log(req);
-//     const result = await db.query("SELECT username FROM users WHERE email = $1", [req.user.email]);
-//     const currUser = result.rows[0].username;
-//     const room = 1;
-//     // console.log(currUser);
-//     if(req.body.username !== currUser) {
-//       try {
-//         const result = await db.query("UPDATE users SET username = $1 WHERE email = $2 RETURNING *", [req.body.username, req.user.email]);
-//         const currUser = await result.rows[0].username;
-//         res.render("chat.ejs", {username: currUser, room: room});
-//       } catch(err) {
-//         console.log(err);
-//       }
-//     } else {
-//       res.render("chat.ejs", {username: currUser, room: room});
-//     }
-//   } else {
-//     res.redirect("/logout");
-//   }
-// })
 
 app.get("/chat", async (req, res) => {
   if (req.isAuthenticated()) {
