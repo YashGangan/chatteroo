@@ -3,12 +3,11 @@
 
 A web-based chat application to chat with people over the internet. 
 
-
 ## Screenshots
+![Home](https://github.com/YashGangan/chatteroo/blob/master/screenshots/home.png?raw=true)
 
-![Home Page](https://github.com/YashGangan/chatteroo/screenshots/home.png)
+![Chat](https://github.com/YashGangan/chatteroo/blob/master/screenshots/chat.png?raw=true)
 
-![Chat](https://github.com/YashGangan/chatteroo/screenshots/chat.png)
 ## Run Locally
 
 Clone the project
