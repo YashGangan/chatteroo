@@ -307,6 +307,13 @@ passport.deserializeUser(async (id, cb) => {
 
 // server.listen(port, () => console.log(`Server running on http://localhost:${port}`));
 
-export default function (req, res) {
-  app(req, res);
-}
+const handleRequest = (req, res) => {
+  if (!res.socket.server) {
+    console.log('Server is initializing');
+    res.socket.server = server;
+    server.listen();
+  }
+  server.emit('request', req, res);
+};
+
+export default handleRequest;
