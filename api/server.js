@@ -12,6 +12,11 @@ import * as http from 'node:http';
 import { Server } from "socket.io";
 import formatMessage from '../utils/messages.js';
 import { userJoin, getCurrentUser, userLeave, getRoomUsers } from '../utils/users.js';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 env.config();
 
