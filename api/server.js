@@ -12,11 +12,6 @@ import * as http from 'node:http';
 import { Server } from "socket.io";
 import formatMessage from '../utils/messages.js';
 import { userJoin, getCurrentUser, userLeave, getRoomUsers } from '../utils/users.js';
-import path from 'path';
-import { fileURLToPath } from 'url';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
 env.config();
 
@@ -72,11 +67,9 @@ const supabaseAnonKey = process.env.SUPABASE_ANON_KEY;
 const supabase = createClient(supabaseUrl, supabaseAnonKey);
 const saltRounds = 10;
 
+app.use(express.static('public'));
 app.use(bodyParser.urlencoded({ extended: true }));
-app.set('views', path.join(__dirname, '..', 'views'));
 app.set('view engine', 'ejs');
-
-app.use(express.static(path.join(__dirname, '..', 'public')));
 
 app.use(
   session({
@@ -219,33 +212,13 @@ app.post("/register", async (req, res) => {
   }
 });
 
-app.post("/home", async (req, res) => {
-  if (req.isAuthenticated()) {
-    try {
-      const { data, error } = await supabase
-        .from('users')
-        .select('username')
-        .eq('email', req.user.email);
-
-      if (error) throw error;
-
-      let newName = data[0]?.username || generateFromEmail(req.user.email, 3);
-      res.render("home.ejs", { username: newName });
-    } catch (err) {
-      console.log(err);
-    }
-  } else {
-    res.redirect("/logout");
-  }
-});
-
 // Google auth strategy (OAuth)
 passport.use("google",
   new GoogleStrategy(
     {
       clientID: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-      callbackURL: "http://chatteroo-yash.vercel.app/auth/google/chatteroo",
+      callbackURL: "http://localhost:3000/auth/google/chatteroo",
       userProfileURL: "https://www.googleapis.com/oauth2/v3/userinfo",
     },
     async (accessToken, refreshToken, profile, cb) => {
@@ -332,15 +305,6 @@ passport.deserializeUser(async (id, cb) => {
     }
   });
 
-server.listen(port, () => console.log(`Server running on http://localhost:${port}`));
+// server.listen(port, () => console.log(`Server running on http://localhost:${port}`));
 
-const handleRequest = (req, res) => {
-  if (!res.socket.server) {
-    console.log('Server is initializing');
-    res.socket.server = server;
-    server.listen();
-  }
-  server.emit('request', req, res);
-};
-
-export default handleRequest;
+export default app;

@@ -45,6 +45,7 @@ To run this project, you will need to add the following environment variables to
 
 `SESSION_SECRET`
 
+### For local PostgresDB
 `PG_USER`
 
 `PG_HOST`
@@ -54,3 +55,10 @@ To run this project, you will need to add the following environment variables to
 `PG_PASSWORD`
 
 `PG_PORT`
+
+### For Supabase
+`SUPABASE_ANON_KEY`
+
+`SUPABASE_URL`
+
+
