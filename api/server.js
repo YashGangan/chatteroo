@@ -333,8 +333,6 @@ passport.deserializeUser(async (id, cb) => {
   });
 
 server.listen(port, () => console.log(`Server running on http://localhost:${port}`));
-<<<<<<< HEAD
-=======
 
 const handleRequest = (req, res) => {
   if (!res.socket.server) {
