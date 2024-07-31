@@ -342,6 +342,5 @@ const handleRequest = (req, res) => {
   }
   server.emit('request', req, res);
 };
->>>>>>> 6ae088d52413ba039dde93ff4b9eaa71424198c6
 
 export default handleRequest;
