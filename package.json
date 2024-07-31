@@ -2,12 +2,19 @@
   "name": "chatapp",
   "version": "1.0.0",
   "description": "",
-  "main": "server.js",
+  "main": "api/server.js",
   "type": "module",
   "scripts": {
+<<<<<<< HEAD
     "start": "node server.js && npx postcss public/css/input.css -o public/css/style.css",
     "dev": "nodemon server.js",
     "build:css": "npx postcss public/css/input.css -o public/css/style.css"
+=======
+    "start": "node api/server.js",
+    "local": "node localDB/server2.js && npx postcss public/css/input.css -o public/css/style.css",
+    "dev": "nodemon api/server.js",
+    "build": "npx postcss public/css/input.css -o public/css/style.css"
+>>>>>>> 6ae088d52413ba039dde93ff4b9eaa71424198c6
   },
   "keywords": [],
   "author": "",
